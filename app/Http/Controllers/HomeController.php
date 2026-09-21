@@ -10,7 +10,7 @@ class HomeController extends Controller
     }
 
     function products() {
-        $data = Product::with("image")->paginate(8);
+        $data = Product::with(['primaryImage', 'images', 'variants'])->paginate(8);
         return view('pages.product.products', compact('data'));
     }
 
@@ -19,7 +19,7 @@ class HomeController extends Controller
     }
     
     function detailProduct($id) {
-        $product = Product::where("id", $id)->with("image")->firstOrFail();
+        $product = Product::where("id", $id)->with(['images', 'variants'])->firstOrFail();
         return view("pages.product.detail", compact("product"));
     }
 }

@@ -1,346 +1,306 @@
 @extends("layouts.dashboard")
 @section('content')
 
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+<div class="min-h-screen bg-white">
 
     <x-sidebar />
 
-    <main class="ml-64 p-6">
+    <main class="ml-64">
 
-        <!-- Header -->
-        <div class="mb-8">
-            <div class="flex items-center justify-between mb-4">
+        <!-- ============================================ -->
+        <!-- HEADER -->
+        <!-- ============================================ -->
+        <div class="border-b border-gray-200">
+            <div class="px-8 lg:px-12 py-6 flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Product Management</h1>
-                    <p class="text-gray-600 mt-1">Manage your product catalog efficiently</p>
+                    <p class="text-[11px] tracking-[0.3em] uppercase text-gray-500 mb-2">
+                        Management
+                    </p>
+                    <h1 class="text-3xl lg:text-4xl font-black text-black tracking-tight uppercase leading-none">
+                        Products
+                    </h1>
                 </div>
                 
-                
-                
-                <div class="flex items-center gap-4">
-                    <!-- Add Product Button -->
-                    <button
-                        type="button"
-                        class="group flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                        title="Edit Product"
+                <button type="button"
                         onclick="openCreateModal()"
-                    >
-                        <i class="bi bi-plus-circle text-lg"></i>
-                    </button>
-
-                    {{-- <a href="{{ route('admin.products.create') }}"
-                       class="group flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-                        <i class="bi bi-plus-circle text-lg"></i>
-                        <span>Add Product</span>
-                    </a> --}}
-
-                </div>
+                        class="bg-black text-white px-6 py-3 text-[11px] font-medium tracking-[0.2em] uppercase hover:bg-white hover:text-black border border-black transition-all duration-300">
+                    + Add Product
+                </button>
             </div>
         </div>
 
-        <!-- Filters & Search -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 mb-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- ============================================ -->
+        <!-- SEARCH & STATS -->
+        <!-- ============================================ -->
+        <div class="px-8 lg:px-12 py-8 border-b border-gray-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                
                 <!-- Search -->
-                <div class="flex-1">
-                    <div class="relative">
-                        <i class="bi bi-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" 
-                               placeholder="Search products..." 
-                               class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
+                <div class="flex-1 max-w-md search-input-wrap">
+                    <i class="bi bi-search"></i>
+                    <input type="text" 
+                        placeholder="Search products..." 
+                        class="border border-gray-300 py-3 text-[13px] text-black focus:outline-none focus:border-black transition-colors">
+                </div>
+
+                <!-- Stats -->
+                <div class="flex items-center gap-8 text-[11px] tracking-[0.15em] uppercase">
+                    <div>
+                        <span class="text-gray-500">Total:</span>
+                        <span class="text-black font-bold ml-2">{{ $products->count() }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Stock:</span>
+                        <span class="text-black font-bold ml-2">{{ $products->sum(function($p) { return $p->variants->sum('stock'); }) }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Wishlist:</span>
+                        <span class="text-black font-bold ml-2">❤️ {{ $stats['total_wishlist'] }}</span>
                     </div>
                 </div>
-
             </div>
         </div>
 
-        <!-- Success Message -->
+        <!-- ============================================ -->
+        <!-- MESSAGES -->
+        <!-- ============================================ -->
         @if (session()->has('success'))
-        <div class="mb-6 p-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-2xl shadow-lg flex items-center justify-between animate-fadeIn">
-            <div class="flex items-center gap-3">
-                <i class="bi bi-check-circle-fill text-xl"></i>
-                <span class="font-medium">{{ session('success') }}</span>
+            <div class="mx-8 lg:mx-12 mt-6 border-l-2 border-black bg-gray-50 px-6 py-4 flex items-center justify-between">
+                <p class="text-[12px] tracking-wider uppercase text-black">
+                    {{ session('success') }}
+                </p>
+                <button onclick="this.parentElement.remove()" class="text-black hover:opacity-60">
+                    <i class="bi bi-x-lg text-[14px]"></i>
+                </button>
             </div>
-            <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
         @endif
 
         @if (session()->has('error'))
-        <div class="mb-6 p-4 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-2xl shadow-lg flex items-center justify-between animate-fadeIn">
-            <div class="flex items-center gap-3">
-                <i class="bi bi-exclamation-triangle-fill text-xl"></i>
-                <span class="font-medium">{{ session('error') }}</span>
+            <div class="mx-8 lg:mx-12 mt-6 border-l-2 border-red-500 bg-red-50 px-6 py-4 flex items-center justify-between">
+                <p class="text-[12px] tracking-wider uppercase text-red-600">
+                    {{ session('error') }}
+                </p>
+                <button onclick="this.parentElement.remove()" class="text-red-600 hover:opacity-60">
+                    <i class="bi bi-x-lg text-[14px]"></i>
+                </button>
             </div>
-            <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
         @endif
 
-        <!-- Products Table -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gradient-to-r from-violet-600 to-purple-600 text-white">
-                        <tr>
-                            <th class="p-4 text-left font-semibold">
-                                <div class="flex items-center gap-2">
-                                    <span>Product</span>
-                                </div>
-                            </th>
-                            {{-- <th class="p-4 text-left font-semibold">Category</th> --}}
-                            <th class="p-4 text-left font-semibold">Price</th>
-                            <th class="p-4 text-left font-semibold">Last Updated</th>
-                            <th class="p-4 text-left font-semibold">Actions</th>
-                        </tr>
-                    </thead>
+        <!-- ============================================ -->
+        <!-- TABLE -->
+        <!-- ============================================ -->
+        <div class="px-8 lg:px-12 py-8">
+            <div class="border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        
+                        <!-- Table Header -->
+                        <thead class="bg-white border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">Product</th>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">Price</th>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">Variants</th>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">Stock</th>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">Wishlist</th>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">Updated</th>
+                                <th class="px-6 py-4 text-right text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">Actions</th>
+                            </tr>
+                        </thead>
 
-                    <tbody class="divide-y divide-gray-200">
-                        @forelse($products as $item)
-                        <tr class="hover:bg-gray-50/80 transition-colors duration-200 group">
-                            <!-- Product Info -->
-                            <td class="p-4">
-                                <div class="flex items-center gap-4">
-                                    <div class="relative">
-                                        <img src="{{ asset('storage/' . $item->image->path) }}" 
-                                             class="h-14 w-14 rounded-xl object-cover shadow-sm border border-gray-200">
+                        <!-- Table Body -->
+                        <tbody class="divide-y divide-gray-200">
+                            @forelse($products as $item)
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                
+                                <!-- Product -->
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-4">
+                                        @if($item->primaryImage)
+                                            <img src="{{ asset('storage/' . $item->primaryImage->path) }}" 
+                                                 class="w-12 h-12 object-cover bg-gray-50 border border-gray-200">
+                                        @else
+                                            <div class="w-12 h-12 bg-gray-50 flex items-center justify-center border border-gray-200">
+                                                <i class="bi bi-image text-gray-300 text-[14px]"></i>
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <p class="text-[12px] font-medium text-black tracking-wider uppercase">
+                                                {{ $item->name }}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="font-semibold text-gray-900">{{ $item->name }}</p>
-                                    </div>
-                                </div>
-                            </td>
+                                </td>
 
-                            <!-- Category -->
-                            {{-- <td class="p-4">
-                                <span class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm">
-                                    <i class="bi bi-tag"></i>
-                                    {{ $item->category->name ?? 'Uncategorized' }}
-                                </span>
-                            </td> --}}
+                                <!-- Price -->
+                                <td class="px-6 py-4">
+                                    <span class="text-[12px] font-medium text-black">
+                                        IDR {{ number_format($item->price, 0, ',', '.') }}
+                                    </span>
+                                </td>
 
-                            <!-- Price -->
-                            <td class="p-4">
-                                <div class="font-bold text-gray-900">
-                                    Rp {{ number_format($item->price, 0, ',', '.') }}
-                                </div>
-                                @if($item->discount)
-                                <div class="text-sm text-emerald-600 font-medium mt-1">
-                                    <i class="bi bi-arrow-down-right"></i>
-                                    {{ $item->discount }}% OFF
-                                </div>
-                                @endif
-                            </td>
+                                <!-- Variants -->
+                                <td class="px-6 py-4">
+                                    @if($item->variants && $item->variants->count() > 0)
+                                        <div class="flex flex-wrap gap-1.5">
+                                            @foreach($item->variants as $variant)
+                                                <span class="inline-flex items-center gap-1 text-[10px] tracking-wider uppercase border border-gray-300 px-2 py-0.5 text-black">
+                                                    {{ $variant->size }}
+                                                    <span class="text-gray-400">({{ $variant->stock }})</span>
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <span class="text-[11px] text-gray-400 tracking-wider uppercase">—</span>
+                                    @endif
+                                </td>
 
-                            <!-- Last Updated -->
-                            <td class="p-4 text-sm text-gray-600">
-                                {{ $item->updated_at->format('M d, Y') }}
-                                <br>
-                                <span class="text-gray-400">{{ $item->updated_at->format('H:i') }}</span>
-                            </td>
+                                <!-- Total Stock -->
+                                <td class="px-6 py-4">
+                                    <span class="text-[12px] font-bold text-black">
+                                        {{ $item->variants->sum('stock') }}
+                                    </span>
+                                </td>
 
-                            <!-- Actions -->
-                            <td class="p-4">
-                                <div class="flex items-center gap-2">
-                                    <!-- View Button -->
-                                    <a href="{{ route('product.detail', $item->id) }}" 
-                                       target="_blank"
-                                       class="p-2 text-gray-600 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
-                                       title="View Product">
-                                        <i class="bi bi-eye text-lg"></i>
-                                    </a>
+                                <!-- Wishlist Count -->
+                                <td class="px-6 py-4">
+                                    @if($item->wishlists_count > 0)
+                                        <span class="inline-flex items-center gap-1 text-[11px] tracking-wider text-black">
+                                            <i class="bi bi-heart-fill text-red-500 text-[12px]"></i>
+                                            <span class="font-bold">{{ $item->wishlists_count }}</span>
+                                        </span>
+                                    @else
+                                        <span class="text-[11px] text-gray-300">—</span>
+                                    @endif
+                                </td>
 
-                                    <!-- Edit Button -->
-                                    <button
-                                        type="button"
-                                        class="p-2 text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                                        title="Edit Product"
-                                        onclick="openEditModal({{ $item }})">
-                                        <i class="bi bi-pencil-square text-lg"></i>
-                                    </button>
+                                <!-- Updated -->
+                                <td class="px-6 py-4">
+                                    <span class="text-[11px] text-gray-500 tracking-wider">
+                                        {{ $item->updated_at->format('d M Y') }}
+                                    </span>
+                                    <br>
+                                    <span class="text-[10px] text-gray-400 tracking-wider">
+                                        {{ $item->updated_at->format('H:i') }}
+                                    </span>
+                                </td>
 
+                                <!-- Actions -->
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center justify-end gap-3">
+                                        
+                                        <!-- View -->
+                                        <a href="{{ route('product.detail', $item->id) }}" 
+                                           target="_blank"
+                                           class="text-gray-400 hover:text-black transition-colors"
+                                           title="View">
+                                            <i class="bi bi-eye text-[14px]"></i>
+                                        </a>
 
-                                    <!-- Delete Button -->
-                                    <form action="{{ route('admin.products.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirmDelete(event)">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="p-2 text-gray-600 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                                                title="Delete Product">
-                                            <i class="bi bi-trash text-lg"></i>
+                                        <!-- Edit -->
+                                        <button type="button"
+                                                class="text-gray-400 hover:text-black transition-colors"
+                                                title="Edit"
+                                                onclick='openEditModal({{ json_encode($item->load('images')) }})'>
+                                            <i class="bi bi-pencil text-[14px]"></i>
                                         </button>
-                                    </form>
 
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="p-8 text-center">
-                                <div class="flex flex-col items-center justify-center py-12">
-                                    <div class="bg-gray-100 p-6 rounded-2xl mb-4">
-                                        <i class="bi bi-box text-4xl text-gray-400"></i>
+                                        <!-- Delete -->
+                                        <form action="{{ route('admin.products.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirmDelete(event)">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="text-gray-400 hover:text-red-500 transition-colors"
+                                                    title="Delete">
+                                                <i class="bi bi-trash text-[14px]"></i>
+                                            </button>
+                                        </form>
                                     </div>
-                                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No Products Found</h3>
-                                    <p class="text-gray-600 mb-6">Get started by adding your first product</p>
-                                    {{-- <a href="{{ route('admin.products.create') }}"
-                                       class="bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl shadow hover:shadow-lg transition">
-                                        + Add First Product
-                                    </a> --}}
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="px-6 py-20 text-center">
+                                    <i class="bi bi-box text-4xl text-gray-300 block mb-4"></i>
+                                    <p class="text-[12px] tracking-[0.2em] uppercase text-black mb-2">
+                                        No products found
+                                    </p>
+                                    <p class="text-[11px] text-gray-500">
+                                        Get started by adding your first product
+                                    </p>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
         </div>
 
     </main>
 
-
-    {{-- modal creta --}}
+    <!-- ============================================ -->
+    <!-- MODAL CREATE -->
+    <!-- ============================================ -->
     <div id="createModal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/50" onclick="closeCreateModal()"></div>
-
-        <div class="relative bg-white w-full max-w-3xl mx-auto mt-10 rounded-xl shadow-lg max-h-[90vh]">
-            <div class="flex items-center justify-between px-6 py-4 border-b">
-                <h2 class="text-xl font-semibold">Tambah Product</h2>
-                <button onclick="closeCreateModal()">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
-            {{-- modal content --}}
-            <div class="h-full overflow-y-auto">
-                @include("pages.dashboard.product.create")
+        <div class="relative flex items-center justify-center min-h-screen p-4">
+            <div class="relative bg-white w-full max-w-4xl border border-black max-h-[90vh] overflow-hidden">
+                
+                <!-- Header -->
+                <div class="flex items-center justify-between px-8 py-6 border-b border-gray-200">
+                    <div>
+                        <p class="text-[11px] tracking-[0.3em] uppercase text-gray-500 mb-1">New</p>
+                        <h2 class="text-xl font-black text-black tracking-tight uppercase">Add Product</h2>
+                    </div>
+                    <button onclick="closeCreateModal()" class="text-black text-xl">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                
+                <!-- Body -->
+                <div class="overflow-y-auto max-h-[calc(90vh-100px)]">
+                    @include("pages.dashboard.product.create")
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- ============================================ -->
+    <!-- EDIT MODAL -->
+    <!-- ============================================ -->
+    @include("pages.dashboard.product.partials.editModal")
 
 </div>
-
-<!-- Edit Product Modal -->
-@include("pages.dashboard.product.partials.editModal")
-
 
 @push('scripts')
 <script>
 function confirmDelete(event) {
-    if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+    if (!confirm('Delete this product? This action cannot be undone.')) {
         event.preventDefault();
         return false;
     }
     return true;
 }
 
-// Quick action menu toggle
-document.querySelectorAll('[data-action-menu]').forEach(button => {
-    button.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const menu = button.nextElementSibling;
-        menu.classList.toggle('hidden');
-    });
-});
-
-// Close menu when clicking outside
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('[data-action-menu]')) {
-        document.querySelectorAll('.action-menu').forEach(menu => {
-            menu.classList.add('hidden');
-        });
-    }
-});
-
-// Search functionality (basic)
 const searchInput = document.querySelector('input[placeholder="Search products..."]');
-searchInput.addEventListener('input', function(e) {
-    const searchTerm = e.target.value.toLowerCase();
-    document.querySelectorAll('tbody tr').forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm) ? '' : 'none';
+if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        document.querySelectorAll('tbody tr').forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
     });
-});
+}
 
-</script>
-
-
-{{-- modal create sceiprr --}}
-<script>
 function openCreateModal() {
-    const modal = document.getElementById('createModal');
-    // const form  = document.getElementById('editForm');
-
-    // set action form
-    // form.action = `/admin/products/${product.id}`;
-
-    // // isi field
-    // document.getElementById('edit_name').value = product.name;
-    // document.getElementById('edit_price').value = product.price;
-    // document.getElementById('edit_size').value = product.size ?? '';
-    // document.getElementById('edit_description').value = product.description ?? '';
-
-    modal.classList.remove('hidden');
+    document.getElementById('createModal').classList.remove('hidden');
 }
 
 function closeCreateModal() {
     document.getElementById('createModal').classList.add('hidden');
 }
 </script>
-
 @endpush
 
-@push("styles")
-    
-<style>
-/* Custom animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-fadeIn {
-    animation: fadeIn 0.3s ease-out;
-}
-
-/* Custom scrollbar for table */
-.overflow-x-auto::-webkit-scrollbar {
-    height: 6px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-thumb {
-    background: #c4b5fd;
-    border-radius: 10px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-thumb:hover {
-    background: #a78bfa;
-}
-
-/* Hover effects for table rows */
-tbody tr {
-    transition: all 0.2s ease;
-}
-
-tbody tr:hover {
-    transform: translateX(4px);
-    box-shadow: -4px 0 0 0 #a78bfa;
-}
-</style>
-@endpush
 @endsection
-

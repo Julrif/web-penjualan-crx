@@ -1,162 +1,152 @@
 @extends('layouts.app')
 @section("content")
 
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800">
+<div class="min-h-screen bg-white">
 
     <x-navbar />
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-28">
-
-        <!-- Header Section -->
-        <div class="mb-16 text-center">
-            
-            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
-                Temukan <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-pink-400">Gaya</span> Anda
-            </h1>
-            
-            <p class="text-lg text-violet-200 max-w-2xl mx-auto mb-8">
-                Eksplorasi koleksi eksklusif kami yang dirancang untuk menampilkan kepribadian Anda
-            </p>
-
+    <!-- ============================================ -->
+    <!-- HEADER SECTION -->
+    <!-- ============================================ -->
+    <div class="pt-32 lg:pt-40 pb-12 border-b border-gray-200">
+        <div class="max-w-[1600px] mx-auto px-6 lg:px-12">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+                <div>
+                    <p class="text-[11px] font-medium text-gray-500 tracking-[0.3em] uppercase mb-3">
+                        Collection
+                    </p>
+                    <h1 class="text-4xl lg:text-6xl font-black text-black tracking-tight uppercase leading-none">
+                        All Products
+                    </h1>
+                </div>
+                <div class="text-[12px] text-gray-500 tracking-wider uppercase">
+                    {{ $data->total() }} Items
+                </div>
+            </div>
         </div>
+    </div>
 
-        <!-- Product Grid dengan Layout Responsif -->
-        <div id="product-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            @include('pages.product.partials.product-items', ['products' => $data])
-        </div>
-
-        <!-- Pagination atau Load More -->
-        @if($data->hasMorePages())
-            <div class="mt-16 text-center" id="load-more-container">
-                <div class="inline-flex flex-col items-center space-y-4">
-                    <button id="load-more-btn" 
-                            data-next-page="{{ $data->nextPageUrl() }}"
-                            data-current-page="{{ $data->currentPage() }}"
-                            data-last-page="{{ $data->lastPage() }}"
-                            class="group relative px-8 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all duration-300 border border-white/20 shadow-lg hover:shadow-xl overflow-hidden">
-                        
-                        <div class="relative z-10 flex items-center justify-center gap-3">
-                            <i class="bi bi-plus-circle text-lg"></i>
-                            <span id="load-more-text">Load More Products</span>
-                        </div>
-                        
-                        <!-- Loading Spinner (hidden by default) -->
-                        <div id="loading-spinner" class="hidden absolute inset-0 flex items-center justify-center">
-                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                        </div>
-                        
-                        <div class="absolute inset-0 bg-white/10 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+    <!-- ============================================ -->
+    <!-- FILTER BAR -->
+    <!-- ============================================ -->
+    <div class="border-b border-gray-200">
+        <div class="max-w-[1600px] mx-auto px-6 lg:px-12">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center gap-8 text-[12px] tracking-wider uppercase text-black">
+                    <button class="flex items-center gap-2 hover:opacity-60 transition-opacity">
+                        Availability
+                        <i class="bi bi-chevron-down text-[10px]"></i>
                     </button>
-                    
-                    <!-- Progress Text -->
-                    <div class="text-center">
-                        <span class="text-violet-300 text-sm">
-                            Showing 
-                            <span id="shown-count">{{ $data->count() }}</span> 
-                            of 
-                            <span id="total-count">{{ $data->total() }}</span> 
-                            products
-                        </span>
-                        <div class="w-48 h-1.5 bg-white/10 rounded-full overflow-hidden mt-2 mx-auto">
-                            <div id="progress-bar" 
-                                class="h-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-500"
-                                style="width: {{ ($data->count() / $data->total() * 100) }}%">
-                            </div>
-                        </div>
-                        <p class="text-violet-400 text-xs mt-2">
-                            Page <span id="current-page">{{ $data->currentPage() }}</span> 
-                            of <span id="total-pages">{{ $data->lastPage() }}</span>
-                        </p>
-                    </div>
-                    
-                    <!-- End of Products Message (hidden by default) -->
-                    <div id="end-message" class="hidden text-center">
-                        <div class="inline-flex items-center gap-3 text-emerald-400 bg-emerald-400/10 px-6 py-3 rounded-xl">
-                            <i class="bi bi-check-circle-fill text-lg"></i>
-                            <span class="font-medium">You've reached the end of our collection!</span>
-                        </div>
-                        <p class="text-violet-300 text-sm mt-3">
-                            Can't find what you're looking for? 
-                            <a href="#" class="text-white hover:text-violet-300 transition-colors">
-                                Contact our support team
-                            </a>
-                        </p>
+                    <button class="flex items-center gap-2 hover:opacity-60 transition-opacity">
+                        Price
+                        <i class="bi bi-chevron-down text-[10px]"></i>
+                    </button>
+                </div>
+                <div class="flex items-center gap-6 text-[12px] tracking-wider uppercase text-black">
+                    <button class="flex items-center gap-2 hover:opacity-60 transition-opacity">
+                        Sort
+                        <i class="bi bi-chevron-down text-[10px]"></i>
+                    </button>
+                    <div class="hidden md:flex items-center gap-2">
+                        <i class="bi bi-grid-3x3-gap-fill text-[14px]"></i>
+                        <i class="bi bi-list text-[14px] opacity-40"></i>
                     </div>
                 </div>
             </div>
-            @elseif($data->count() > 0)
-            <div class="mt-16 text-center">
-                <div class="inline-flex items-center gap-3 text-violet-400 bg-violet-400/10 px-6 py-3 rounded-xl">
-                    <i class="bi bi-info-circle-fill"></i>
-                    <span class="font-medium">All {{ $data->total() }} products are displayed</span>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- PRODUCTS GRID -->
+    <!-- ============================================ -->
+    <div class="max-w-[1600px] mx-auto px-6 lg:px-12 py-12 lg:py-16">
+        <div id="product-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-12">
+            @include('pages.product.partials.product-items', ['products' => $data])
+        </div>
+
+        <!-- ============================================ -->
+        <!-- LOAD MORE / PAGINATION -->
+        <!-- ============================================ -->
+        @if($data->hasMorePages())
+            <div class="mt-20 text-center" id="load-more-container">
+                <button id="load-more-btn" 
+                        data-next-page="{{ $data->nextPageUrl() }}"
+                        data-current-page="{{ $data->currentPage() }}"
+                        data-last-page="{{ $data->lastPage() }}"
+                        class="inline-block border border-black px-12 py-4 text-[12px] font-medium tracking-[0.15em] uppercase text-black hover:bg-black hover:text-white transition-all duration-300">
+                    <span id="load-more-text">Load More</span>
+                    <div id="loading-spinner" class="hidden inline-block ml-2">
+                        <div class="animate-spin rounded-full h-3 w-3 border-b border-current"></div>
+                    </div>
+                </button>
+                
+                <!-- Hidden data for JS -->
+                <div class="hidden">
+                    <span id="shown-count">{{ $data->count() }}</span>
+                    <span id="total-count">{{ $data->total() }}</span>
+                    <span id="current-page">{{ $data->currentPage() }}</span>
+                    <span id="total-pages">{{ $data->lastPage() }}</span>
+                    <div id="progress-bar"></div>
+                    <div id="end-message"></div>
                 </div>
             </div>
         @endif
 
-        <!-- Features Section -->
-        <div class="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="text-center p-6 bg-white/5 rounded-2xl backdrop-blur-sm border border-white/10">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-violet-500/20 rounded-lg mb-4">
-                    <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                </div>
-                <h3 class="text-white font-semibold mb-2">Quality Guarantee</h3>
-                <p class="text-violet-200 text-sm">30-day money back guarantee</p>
+        @if(!$data->hasMorePages() && $data->count() > 0)
+            <div class="mt-16 text-center">
+                <p class="text-[12px] text-gray-500 tracking-wider uppercase">
+                    — All {{ $data->total() }} products displayed —
+                </p>
             </div>
-            
-            <div class="text-center p-6 bg-white/5 rounded-2xl backdrop-blur-sm border border-white/10">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-violet-500/20 rounded-lg mb-4">
-                    <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <h3 class="text-white font-semibold mb-2">Fast Delivery</h3>
-                <p class="text-violet-200 text-sm">Free shipping over $100</p>
+        @endif
+
+        @if($data->count() == 0)
+            <div class="text-center py-20">
+                <p class="text-[14px] text-gray-500 tracking-wider uppercase mb-2">
+                    No products found
+                </p>
+                <p class="text-[12px] text-gray-400">
+                    Come back later for new arrivals
+                </p>
             </div>
-            
-            <div class="text-center p-6 bg-white/5 rounded-2xl backdrop-blur-sm border border-white/10">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-violet-500/20 rounded-lg mb-4">
-                    <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+        @endif
+    </div>
+
+    <!-- ============================================ -->
+    <!-- FEATURES BAR -->
+    <!-- ============================================ -->
+    <div class="border-t border-gray-200 bg-white">
+        <div class="max-w-[1600px] mx-auto px-6 lg:px-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                <div class="py-8 md:pr-8">
+                    <p class="text-[12px] font-medium tracking-wider uppercase text-black mb-1">
+                        Quality Guarantee
+                    </p>
+                    <p class="text-[11px] text-gray-500 tracking-wider uppercase">
+                        30-Day Return Policy
+                    </p>
                 </div>
-                <h3 class="text-white font-semibold mb-2">24/7 Support</h3>
-                <p class="text-violet-200 text-sm">Dedicated customer service</p>
+                <div class="py-8 md:px-8">
+                    <p class="text-[12px] font-medium tracking-wider uppercase text-black mb-1">
+                        Fast Delivery
+                    </p>
+                    <p class="text-[11px] text-gray-500 tracking-wider uppercase">
+                        Free Shipping Over Rp 500.000
+                    </p>
+                </div>
+                <div class="py-8 md:pl-8">
+                    <p class="text-[12px] font-medium tracking-wider uppercase text-black mb-1">
+                        24/7 Support
+                    </p>
+                    <p class="text-[11px] text-gray-500 tracking-wider uppercase">
+                        Dedicated Customer Service
+                    </p>
+                </div>
             </div>
         </div>
-
     </div>
 
 </div>
-
-{{-- Style --}}
-@push('styles')
-    <style>
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .animate-fadeIn {
-            animation: fadeIn 0.6s ease-out forwards;
-        }
-        
-        /* Staggered animation for items */
-        .grid > *:nth-child(1) { animation-delay: 0.1s; }
-        .grid > *:nth-child(2) { animation-delay: 0.2s; }
-        .grid > *:nth-child(3) { animation-delay: 0.3s; }
-        .grid > *:nth-child(4) { animation-delay: 0.4s; }
-        .grid > *:nth-child(5) { animation-delay: 0.5s; }
-        .grid > *:nth-child(6) { animation-delay: 0.6s; }
-    </style>
-@endpush
 
 {{-- Script --}}
 @push('scripts')
@@ -167,9 +157,7 @@
             const loadingSpinner = document.getElementById('loading-spinner');
             const loadMoreText = document.getElementById('load-more-text');
             const shownCount = document.getElementById('shown-count');
-            const progressBar = document.getElementById('progress-bar');
             const currentPage = document.getElementById('current-page');
-            const endMessage = document.getElementById('end-message');
             const loadMoreContainer = document.getElementById('load-more-container');
             const totalCount = document.getElementById('total-count');
             
@@ -186,8 +174,9 @@
                 // Show loading state
                 isLoading = true;
                 loadingSpinner.classList.remove('hidden');
-                loadMoreText.classList.add('hidden');
+                loadMoreText.textContent = 'Loading...';
                 loadMoreBtn.disabled = true;
+                loadMoreBtn.style.opacity = '0.6';
                 
                 try {
                     const response = await fetch(nextPageUrl, {
@@ -200,122 +189,53 @@
                     
                     const html = await response.text();
                     
-                    // Parse the HTML response
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     
-                    // Extract new products and update data
                     const newProducts = doc.getElementById('product-container').innerHTML;
                     const newLoadMoreBtn = doc.getElementById('load-more-btn');
                     
-                    // Append new products with fade-in animation
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = newProducts;
                     const productElements = tempDiv.children;
                     
-                    // Add delay for staggered animation
-                    Array.from(productElements).forEach((element, index) => {
-                        element.style.animationDelay = `${index * 0.1}s`;
+                    Array.from(productElements).forEach((element) => {
                         productContainer.appendChild(element.cloneNode(true));
                     });
                     
-                    // Update pagination data
                     if (newLoadMoreBtn) {
                         loadMoreBtn.dataset.nextPage = newLoadMoreBtn.dataset.nextPage;
                         loadMoreBtn.dataset.currentPage = newLoadMoreBtn.dataset.currentPage;
-                        
-                        // Update current page number
                         currentPage.textContent = parseInt(newLoadMoreBtn.dataset.currentPage) + 1;
                     } else {
-                        // No more pages, show end message
                         loadMoreContainer.classList.add('hidden');
-                        endMessage.classList.remove('hidden');
+                        // Tampilkan pesan end
+                        const endMsg = document.createElement('div');
+                        endMsg.className = 'mt-16 text-center';
+                        endMsg.innerHTML = '<p class="text-[12px] text-gray-500 tracking-wider uppercase">— All products displayed —</p>';
+                        loadMoreContainer.parentNode.appendChild(endMsg);
                     }
                     
-                    // Update counts
                     const currentShown = parseInt(shownCount.textContent);
                     const newProductsCount = productElements.length;
-                    const totalProducts = parseInt(totalCount.textContent);
-                    
                     shownCount.textContent = currentShown + newProductsCount;
-                    
-                    // Update progress bar
-                    const progressPercentage = ((currentShown + newProductsCount) / totalProducts) * 100;
-                    progressBar.style.width = `${Math.min(progressPercentage, 100)}%`;
                     
                 } catch (error) {
                     console.error('Error loading more products:', error);
-                    
-                    // Show error message
-                    loadMoreText.innerHTML = '<i class="bi bi-exclamation-triangle mr-2"></i>Error Loading';
-                    loadMoreText.classList.remove('hidden');
-                    
-                    // Reset button after 3 seconds
+                    loadMoreText.textContent = 'Error — Try Again';
                     setTimeout(() => {
-                        loadMoreText.innerHTML = 'Load More Products';
-                        resetButton();
+                        loadMoreText.textContent = 'Load More';
                     }, 3000);
-                    return;
-                    
                 } finally {
-                    resetButton();
-                }
-                
-                function resetButton() {
                     isLoading = false;
                     loadingSpinner.classList.add('hidden');
-                    loadMoreText.classList.remove('hidden');
                     loadMoreBtn.disabled = false;
-                }
-            });
-            
-            // Infinite scroll (optional)
-            let observer;
-            if (IntersectionObserver) {
-                observer = new IntersectionObserver((entries) => {
-                    if (entries[0].isIntersecting && !isLoading) {
-                        loadMoreBtn.click();
+                    loadMoreBtn.style.opacity = '1';
+                    if (loadMoreText.textContent === 'Loading...') {
+                        loadMoreText.textContent = 'Load More';
                     }
-                }, {
-                    rootMargin: '100px',
-                    threshold: 0.1
-                });
-                
-                observer.observe(loadMoreBtn);
-            }
-            
-            // Keyboard shortcut (Spacebar to load more)
-            document.addEventListener('keydown', (e) => {
-                if (e.code === 'Space' && !isLoading && 
-                    document.activeElement !== document.body && 
-                    !document.activeElement.matches('input, textarea, button, a')) {
-                    e.preventDefault();
-                    loadMoreBtn.click();
                 }
             });
-        });
-
-        // Animation for new items
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '50px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Observe all product cards
-        document.querySelectorAll('#product-container > div').forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(card);
         });
     </script>
 @endpush
